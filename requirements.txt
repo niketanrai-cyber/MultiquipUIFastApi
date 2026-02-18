@@ -1,0 +1,7 @@
+fastapi[standard]
+uvicorn
+httpx
+xhtml2pdf==0.2.11
+python-dotenv
+jinja2
+user-agents
