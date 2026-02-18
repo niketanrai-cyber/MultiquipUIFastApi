@@ -1883,6 +1883,7 @@
             // Thumbs Up
             const upBtn = document.createElement('button');
             upBtn.className = 'feedback-btn';
+            upBtn.setAttribute('data-feedback', 'true');
             upBtn.innerHTML = '👍';
             upBtn.title = 'Good Response';
             upBtn.style.fontSize = '20px';  // Reduced icon size
@@ -1891,6 +1892,7 @@
             // Thumbs Down
             const downBtn = document.createElement('button');
             downBtn.className = 'feedback-btn';
+            downBtn.setAttribute('data-feedback', 'true');
             downBtn.innerHTML = '👎';
             downBtn.title = 'Bad Response';
             downBtn.style.fontSize = '20px';  // Reduced icon size
@@ -1972,19 +1974,11 @@
                 // Disable buttons
                 // Disable buttons
                 if (context && context.buttonContainer) {
-                    const buttons = context.buttonContainer.querySelectorAll('button');
+                    const buttons = context.buttonContainer.querySelectorAll('button[data-feedback]');
                     buttons.forEach(btn => {
-                        // Only disable feedback buttons (thumbs up/down)
-                        // In createMessageElement, we didn't add a specific class to distinguish easily, 
-                        // but we can check the innerHTML or title. 
-                        // Better yet, let's look at the button creation code:
-                        // feedback buttons have class 'feedback-btn' (but so does email button).
-                        // Let's check the content.
-                        if (btn.innerText === '👍' || btn.innerText === '👎') {
-                             btn.disabled = true;
-                             btn.style.opacity = '0.5';
-                             btn.style.cursor = 'not-allowed';
-                        }
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                        btn.style.cursor = 'not-allowed';
                     });
                 }
             } catch (e) {
