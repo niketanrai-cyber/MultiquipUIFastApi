@@ -1970,11 +1970,21 @@
                 console.log('Feedback submitted');
 
                 // Disable buttons
+                // Disable buttons
                 if (context && context.buttonContainer) {
                     const buttons = context.buttonContainer.querySelectorAll('button');
                     buttons.forEach(btn => {
-                        btn.disabled = true;
-                        btn.title = "Feedback submitted";
+                        // Only disable feedback buttons (thumbs up/down)
+                        // In createMessageElement, we didn't add a specific class to distinguish easily, 
+                        // but we can check the innerHTML or title. 
+                        // Better yet, let's look at the button creation code:
+                        // feedback buttons have class 'feedback-btn' (but so does email button).
+                        // Let's check the content.
+                        if (btn.innerText === '👍' || btn.innerText === '👎') {
+                             btn.disabled = true;
+                             btn.style.opacity = '0.5';
+                             btn.style.cursor = 'not-allowed';
+                        }
                     });
                 }
             } catch (e) {
