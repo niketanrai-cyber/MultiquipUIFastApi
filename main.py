@@ -136,54 +136,51 @@ async def chat_endpoint(payload: ChatRequest):
 
 @app.post("/feedback")
 async def save_feedback(feedback: FeedbackRequest):
-    file_path = "User_Feedback.json"
-    
-    # Check if file exists, if not create list
-    if not os.path.exists(file_path):
-        with open(file_path, "w") as f:
-            json.dump([], f)
+    """Send feedback to the external Boomi API.
+    Note: No local file storage — Vercel has a read-only filesystem."""
 
     FEEDBACK_API_URL = "https://securebqa.multiquip.com/ws/simple/executeUserfeedback"
 
     try:
-        # Read existing data
-        with open(file_path, "r") as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = [] # Handle corrupt file
+        feedback_data = feedback.dict()
+        feedback_data["timestamp"] = datetime.now().isoformat()
 
-        # Append new feedback
-        new_entry = feedback.dict()
-        data.append(new_entry)
+        # Send feedback to external API
+        timeout_config = httpx.Timeout(15.0)
+        async with httpx.AsyncClient(timeout=timeout_config) as client:
+            ext_response = await client.post(
+                FEEDBACK_API_URL,
+                headers={"Content-Type": "application/json"},
+                json=feedback_data,
+                auth=(BOOMI_USERNAME, BOOMI_PASSWORD)
+            )
 
-        # Write back to local file
-        with open(file_path, "w") as f:
-            json.dump(data, f, indent=4)
-            
-        # --- SEND TO EXTERNAL API ---
-        try:
-            timeout_config = httpx.Timeout(10.0) # Short timeout for feedback
-            async with httpx.AsyncClient(timeout=timeout_config) as client:
-                # Fire and forget (await but don't fail main request)
-                ext_response = await client.post(
-                    FEEDBACK_API_URL,
-                    headers={"Content-Type": "application/json"},
-                    json=new_entry,
-                    auth=(BOOMI_USERNAME, BOOMI_PASSWORD)
+            if ext_response.status_code == 200:
+                print(f"✅ Feedback submitted successfully: {feedback.rating}")
+                return JSONResponse(
+                    content={"message": "Feedback saved successfully"},
+                    status_code=200
                 )
-                if ext_response.status_code == 200:
-                    print("✅ External feedback submitted successfully")
-                else:
-                    print(f"⚠️ External feedback failed: {ext_response.status_code} - {ext_response.text}")
-        except Exception as api_error:
-            print(f"⚠️ Error submitting external feedback: {str(api_error)}")
-        # ----------------------------
+            else:
+                print(f"⚠️ Feedback API returned {ext_response.status_code}: {ext_response.text}")
+                # Still return 200 to user so UI doesn't show error
+                return JSONResponse(
+                    content={"message": "Feedback received"},
+                    status_code=200
+                )
 
-        return JSONResponse(content={"message": "Feedback saved successfully"}, status_code=200)
-
+    except httpx.TimeoutException:
+        print("⚠️ Feedback API timed out")
+        return JSONResponse(
+            content={"message": "Feedback received (processing delayed)"},
+            status_code=200
+        )
     except Exception as e:
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        print(f"❌ Feedback error: {str(e)}")
+        return JSONResponse(
+            content={"message": "Feedback received"},
+            status_code=200
+        )
 
 
 # Mount static files only for specific image assets (security improvement)
