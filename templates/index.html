@@ -119,7 +119,7 @@
 
         /* --- HEADER --- */
         .header {
-            padding: 10px 30px;
+            padding: 6px 24px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -128,11 +128,11 @@
             flex-shrink: 0;
             box-shadow: var(--shadow-sm);
             z-index: 20;
-            height: 80px;
+            height: 56px;
         }
 
         .logo-img {
-            height: 60px;
+            height: 42px;
             width: auto;
             display: block;
         }
@@ -199,11 +199,11 @@
 
         .chat-history {
             flex: 1;
-            padding: 20px 5%;
+            padding: 15px 4%;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 14px;
             background-color: transparent;
         }
 
@@ -224,9 +224,9 @@
         /* --- BUBBLE FIX (Prevents explosion) --- */
         .message-bubble {
             max-width: 75%;
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-size: 16px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 14px;
             line-height: 1.6;
             position: relative;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -285,6 +285,8 @@
             background-color: var(--user-bubble-bg);
             color: var(--user-text-color);
             border-bottom-right-radius: 2px;
+            min-width: 60px;
+            /* Prevents short words from breaking */
         }
 
         .bot .message-bubble {
@@ -300,13 +302,13 @@
 
         /* --- VECTOR ICONS --- */
         .avatar-icon {
-            width: 85px;
+            width: 50px;
             height: auto;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 12px;
-            margin: 0 15px;
+            margin: 0 10px;
             flex-shrink: 0;
             transition: all 0.3s ease;
             background: transparent;
@@ -477,7 +479,7 @@
 
         /* --- INPUT AREA (FULL WIDTH BOTTOM) --- */
         .input-area {
-            padding: 20px;
+            padding: 12px 20px;
             background-color: var(--input-area-bg);
             backdrop-filter: blur(10px);
             border-top: 1px solid var(--border-color);
@@ -490,7 +492,7 @@
 
         .input-box {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
@@ -499,14 +501,14 @@
 
         input[type="text"] {
             flex: 1;
-            padding: 12px 20px;
+            padding: 10px 16px;
             border: 1px solid var(--input-border);
             border-radius: 8px;
             outline: none;
-            font-size: 16px;
+            font-size: 14px;
             background-color: var(--input-box-bg);
             color: var(--text-color);
-            height: 50px;
+            height: 42px;
         }
 
         input[type="text"]:focus {
@@ -518,8 +520,8 @@
             background-color: #1f1f1f;
             border: none;
             border-radius: 10px;
-            width: 50px;
-            height: 50px;
+            width: 42px;
+            height: 42px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -1196,6 +1198,8 @@
             bubbleContainer.style.display = 'flex';
             bubbleContainer.style.flexDirection = 'column';
             bubbleContainer.style.alignItems = role === 'user' ? 'flex-end' : 'flex-start';
+            bubbleContainer.style.flex = '1';
+            bubbleContainer.style.minWidth = '0';
             bubbleContainer.style.maxWidth = '100%';
 
             const bubbleDiv = document.createElement('div');
